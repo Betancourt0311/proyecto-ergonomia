@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizador Ergonómico y Auditoría - Tecnoservicios</title>
+    <!-- Tailwind CSS para diseño moderno responsivo -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap');
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .heading-font {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        /* Efecto de pulso y brillo verde para zonas ergonómicas correctas */
+        .hotspot-glow {
+            animation: pulse-glow 2s infinite;
+        }
+        @keyframes pulse-glow {
+            0% { transform: scale(1); opacity: 0.4; box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { transform: scale(1.1); opacity: 1; box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+            100% { transform: scale(1); opacity: 0.4; box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+        /* Efecto de pulso y brillo rojo para zonas de riesgo */
+        .hotspot-red {
+            animation: pulse-red 2s infinite;
+        }
+        @keyframes pulse-red {
+            0% { transform: scale(1); opacity: 0.4; box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { transform: scale(1.1); opacity: 1; box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { transform: scale(1); opacity: 0.4; box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+        
+        /* Barra de desplazamiento personalizada para la lista del checklist */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.3);
+            border-radius: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #10b981;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-emerald-500 selection:text-slate-950">
+
+    <!-- Notificación emergente flotante para simular guardar auditorías sin usar alerts intrusivos -->
+    <div id="toast" class="fixed bottom-6 right-6 transform translate-y-20 opacity-0 bg-emerald-500 text-slate-950 px-6 py-4 rounded-2xl shadow-2xl font-bold flex items-center gap-3 z-50 transition-all duration-300 pointer-events-none">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span id="toast-message">Auditoría guardada correctamente</span>
+    </div>
+
+    <!-- Encabezado de la aplicación con branding corporativo y selector de modo de trabajo -->
+    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="p-2 bg-emerald-500/10 rounded-xl border border-emerald-500/20 text-emerald-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                </div>
+                <div>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-950/50 px-2 py-0.5 rounded border border-emerald-800/30">CONSULTORÍA INTERACTIVA SST</span>
+                    <h1 class="text-xl font-bold heading-font text-white leading-none mt-1">Tecnoservicios del Pacífico S.A.S.</h1>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <div class="hidden md:flex gap-2 text-[11px] text-slate-400 border-r border-slate-800 pr-4">
+                    <span>Consultores:</span>
+                    <span class="font-semibold text-white">Gina, Ingris, Lizeth, Nathaly</span>
+                </div>
+                <!-- Selector de Modos (Mapas vs Checklist) -->
+                <div class="bg-slate-950 p-1 rounded-xl border border-slate-800 flex gap-1">
+                    <button onclick="setMode('diagnostico')" id="btn-mode-diag" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-emerald-500 text-slate-950">
+                        Mapas de Postura
+                    </button>
+                    <button onclick="setMode('auditoria')" id="btn-mode-audit" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-400 transition-all hover:text-white">
+                        Checklist Oficial (10 Puntos)
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenido principal interactivo -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 flex flex-col gap-6">
+        
+        <!-- SECCIÓN 1: MAPA DE DIAGNÓSTICO BIOMECÁNICO CON HOTSPOTS ANATÓMICOS -->
+        <div id="section-diagnostico" class="grid grid-cols-1 lg:grid-cols-12 gap-6 transition-all duration-300">
+            
+            <!-- Izquierda: Tablero Visual Interactivo de Anatomía del Puesto (5 de 12 columnas) -->
+            <div class="lg:col-span-5 bg-slate-900 border border-slate-800 rounded-3xl p-6 relative flex flex-col items-center justify-center min-h-[480px]">
+                <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider heading-font absolute top-6 left-6 flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    Estación & Anatomía Virtual
+                </h3>
+
+                <!-- Representación en vectores limpios del cuerpo humano y el puesto de trabajo ergonómico -->
+                <div class="w-full max-w-[280px] h-auto relative my-8">
+                    <svg viewBox="0 0 200 240" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto text-slate-400">
+                        <!-- Línea del suelo -->
+                        <line x1="10" y1="220" x2="190" y2="220" stroke="#334155" stroke-width="2" stroke-linecap="round"/>
+                        
+                        <!-- Escritorio de oficina -->
+                        <path d="M 120 120 H 180 V 125 H 120 Z" fill="#1e293b" stroke="#475569" stroke-width="2"/>
+                        <line x1="130" y1="125" x2="130" y2="220" stroke="#475569" stroke-width="2"/>
+                        <line x1="170" y1="125" x2="170" y2="220" stroke="#475569" stroke-width="2"/>
+                        
+                        <!-- Monitor de visualización de datos -->
+                        <path d="M 160 80 H 180 V 110 H 160 Z" fill="#0f172a" stroke="#475569" stroke-width.5"/>
+                        <line x1="170" y1="110" x2="170" y2="120" stroke="#475569" stroke-width="2"/>
+                        <line x1="165" y1="120" x2="175" y2="120" stroke="#475569" stroke-width="2"/>
+
+                        <!-- Cuerpo del trabajador en postura de sentado neutra -->
+                        <!-- Cabeza -->
+                        <circle cx="80" cy="55" r="12" stroke="#64748b" stroke-width="2" fill="#0f172a"/>
+                        <!-- Columna y torso -->
+                        <path d="M 80 67 C 82 85, 78 110, 80 140" stroke="#64748b" stroke-width="2.5" stroke-linecap="round"/>
+                        <!-- Muslo (Cadera a Rodilla) -->
+                        <path d="M 80 140 H 120" stroke="#64748b" stroke-width="2.5" stroke-linecap="round"/>
+                        <!-- Pantorrilla (Rodilla a Pie) -->
+                        <path d="M 120 140 V 210" stroke="#64748b" stroke-width="2.5" stroke-linecap="round"/>
+                        <!-- Pies -->
+                        <path d="M 120 210 H 130" stroke="#64748b" stroke-width="3" stroke-linecap="round"/>
+                        <!-- Extremidad superior (Hombro -> Codo -> Muñeca en angulación de 90 grados) -->
+                        <path d="M 80 75 L 110 95 L 135 95" stroke="#10b981" stroke-width="2" stroke-linecap="round" fill="none"/>
+                        
+                        <!-- Silla ergonómica de oficina -->
+                        <path d="M 68 142 H 88" stroke="#334155" stroke-width="3"/> <!-- Asiento -->
+                        <path d="M 68 95 V 142" stroke="#334155" stroke-width="2.5"/> <!-- Espaldar curvo -->
+                        <line x1="75" y1="142" x2="75" y2="210" stroke="#334155" stroke-width="3"/> <!-- Amortiguador central -->
+                        <path d="M 60 210 H 90" stroke="#334155" stroke-width="2"/> <!-- Estructura de ruedas -->
+                    </svg>
+
+                    <!-- Botones interactivos (Hotspots) posicionados milimétricamente sobre el cuerpo -->
+                    <!-- Ojos / Distancia de visualización -->
+                    <button onclick="selectHotspot('ojos')" id="hs-ojos" class="absolute top-[20%] right-[55%] w-6 h-6 rounded-full bg-emerald-500/30 border border-emerald-400 hotspot-glow flex items-center justify-center text-[10px] font-bold text-white transition-transform hover:scale-125 z-20">
+                        👁️
+                    </button>
+                    <!-- Cuello (Fisiopatología Cervical) -->
+                    <button onclick="selectHotspot('cuello')" id="hs-cuello" class="absolute top-[26%] right-[58%] w-6 h-6 rounded-full bg-red-500/30 border border-red-400 hotspot-red flex items-center justify-center text-[10px] font-bold text-white transition-transform hover:scale-125 z-20">
+                        頸
+                    </button>
+                    <!-- Espalda (Soporte Lumbar / Cargas) -->
+                    <button onclick="selectHotspot('espalda')" id="hs-espalda" class="absolute top-[52%] right-[60%] w-6 h-6 rounded-full bg-red-500/30 border border-red-400 hotspot-red flex items-center justify-center text-[10px] font-bold text-white transition-transform hover:scale-125 z-20">
+                        脊
+                    </button>
+                    <!-- Muñecas / Manos (Prevención Túnel Carpiano) -->
+                    <button onclick="selectHotspot('munecas')" id="hs-munecas" class="absolute top-[40%] right-[32%] w-6 h-6 rounded-full bg-emerald-500/30 border border-emerald-400 hotspot-glow flex items-center justify-center text-[10px] font-bold text-white transition-transform hover:scale-125 z-20">
+                        ✋
+                    </button>
+                    <!-- Piernas / Retorno Venoso / Apoyapiés -->
+                    <button onclick="selectHotspot('pies')" id="hs-pies" class="absolute bottom-[10%] right-[36%] w-6 h-6 rounded-full bg-emerald-500/30 border border-emerald-400 hotspot-glow flex items-center justify-center text-[10px] font-bold text-white transition-transform hover:scale-125 z-20">
+                        👣
+                    </button>
+                </div>
+
+                <div class="text-center">
+                    <p class="text-xs text-slate-400 font-semibold mb-2">💡 Haz clic en los puntos interactivos del cuerpo</p>
+                    <div class="flex flex-wrap justify-center gap-2">
+                        <span class="px-2 py-1 bg-emerald-950/50 text-[10px] text-emerald-400 font-bold rounded-md border border-emerald-800/30">Verde: Zonas Protegidas</span>
+                        <span class="px-2 py-1 bg-red-950/50 text-[10px] text-red-400 font-bold rounded-md border border-red-800/30">Rojo: Zonas en Alerta</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Derecha: Panel de Diagnóstico y Detalle Comparativo (7 de 12 columnas) -->
+            <div class="lg:col-span-7 flex flex-col gap-6">
+                <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 relative flex-1 flex flex-col justify-between shadow-2xl">
+                    <div>
+                        <div class="flex justify-between items-start border-b border-slate-800 pb-4 mb-4">
+                            <div>
+                                <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest" id="panel-category">ZONA ANATÓMICA</span>
+                                <h2 class="text-2xl font-extrabold text-white heading-font mt-1" id="panel-title">Selecciona un punto</h2>
+                            </div>
+                            <div class="bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800 text-right">
+                                <span class="text-[9px] font-bold text-slate-500 block">SOPORTE LEGAL</span>
+                                <span class="text-xs font-extrabold text-emerald-400" id="panel-legal">---</span>
+                            </div>
+                        </div>
+
+                        <!-- Bloques Comparativos (Antes vs Después) -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                            <!-- Error histórico -->
+                            <div class="bg-red-950/20 border border-red-900/30 rounded-2xl p-4">
+                                <h4 class="text-xs font-bold text-red-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                                    ❌ EL ERROR (MANUAL ANTERIOR)
+                                </h4>
+                                <p id="panel-old" class="text-sm text-slate-300 leading-relaxed">---</p>
+                            </div>
+
+                            <!-- Solución de ingeniería -->
+                            <div class="bg-emerald-950/20 border border-emerald-900/30 rounded-2xl p-4">
+                                <h4 class="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                                    🛡️ EL REDISEÑO ERGONÓMICO
+                                </h4>
+                                <p id="panel-new" class="text-sm text-slate-200 font-medium leading-relaxed">---</p>
+                            </div>
+                        </div>
+
+                        <!-- Explicación Fisiológica Técnica -->
+                        <div class="bg-slate-950/60 rounded-2xl p-4 border border-slate-800/80">
+                            <h4 class="text-xs uppercase tracking-wider text-slate-400 font-bold mb-1.5 flex items-center gap-2">
+                                🧠 Fisiología y Biomecánica (Por qué duele)
+                            </h4>
+                            <p id="panel-physio" class="text-slate-300 text-sm leading-relaxed">---</p>
+                        </div>
+                    </div>
+
+                    <!-- Controles de navegación manual en la presentación -->
+                    <div class="flex justify-between items-center pt-6 mt-6 border-t border-slate-800">
+                        <span class="text-xs text-slate-500 font-medium">Usa este panel interactivo para guiar tu discurso ante la docente</span>
+                        <div class="flex gap-2">
+                            <button onclick="prevHotspot()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-xs font-bold rounded-lg transition text-slate-300">
+                                Anterior
+                            </button>
+                            <button onclick="nextHotspot()" class="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold rounded-lg transition shadow-lg shadow-emerald-500/10">
+                                Siguiente
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- SECCIÓN 2: FORMULARIO DIGITAL DE INSPECCIÓN Y AUDITORÍA DE SST (10 Puntos) -->
+        <div id="section-auditoria" class="bg-slate-900 border border-slate-800 rounded-3xl p-6 hidden flex-col gap-6 shadow-2xl transition-all duration-300">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-800 pb-4">
+                <div>
+                    <h3 class="text-xl font-bold text-white heading-font">Módulo de Auditoría en Tiempo Real (10 Puntos)</h3>
+                    <p class="text-xs text-slate-400 mt-1">Inspección ergonómica oficial basada fielmente en el manual de Tecnoservicios del Pacífico.</p>
+                </div>
+                <!-- Medidor de cumplimiento dinámico en SVG circular -->
+                <div class="flex items-center gap-4 bg-slate-950 p-3 rounded-2xl border border-slate-800">
+                    <div class="text-right">
+                        <span class="text-[9px] font-bold text-slate-500 block uppercase tracking-wider">Estado de Evaluación</span>
+                        <span id="evaluation-progress-text" class="text-xs text-slate-400 font-semibold block">0 de 10 respondidos</span>
+                        <span id="score-text" class="text-sm font-extrabold text-slate-400 mt-1 block">Esperando Datos</span>
+                    </div>
+                    <div class="w-16 h-16 relative flex items-center justify-center">
+                        <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                            <path class="text-slate-800" stroke-width="3" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            <path id="gauge-progress" class="text-slate-700 transition-all duration-500 ease-out" stroke-width="3" stroke-dasharray="0, 100" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        </svg>
+                        <span id="score-percentage" class="absolute text-xs font-extrabold text-white">0%</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Listado de preguntas (8 de 12 columnas) -->
+                <div class="lg:col-span-8 max-h-[500px] overflow-y-auto pr-2 space-y-3 custom-scrollbar">
+                    
+                    <!-- Tarjeta 1: Altura Pantalla -->
+                    <div id="card-step-1" class="bg-slate-950 p-4 rounded-2xl border border-slate-800/60 transition-all duration-300 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div class="flex-1">
+                            <span class="text-[10px] font-bold uppercase text-emerald-400 block">Paso 1: Altura Pantalla</span>
+                            <p class="text-sm text-slate-200 font-medium">¿El borde superior de la pantalla del computador se encuentra ubicado al nivel de los ojos del trabajador en posición recta?</p>
+                        </div>
+                        <div class="flex gap-2 self-end sm:self-center">
+                            <button onclick="setCheck(1, true)" id="c1-yes" class="px-4 py-1.5 rounded-lg text-xs font-bold bg-slate-900 border border-slate-800 text-slate-400 transition hover:text-emerald-400">SÍ</button>
+                            <button onclick="setCheck(1, false)" id="c1-no" class="px-4 py-1.5 rounded-lg text-xs font-bold bg-slate-900 border border-slate-800 text-slate-400 transition hover:text-red-400">NO</button>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta 2: Distancia Pantalla -->
+                    <div id="card-step-2" class="bg-slate-950 p-4 rounded-2xl border border-slate-800/60 transition-all duration-300 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div class="flex-1">
+                            <span class="text-[10px] font-bold uppercase text-emerald-400 block">Paso 2: Distancia Pantalla</span>
+                            <p class="text-sm text-slate-200 font-medium">¿La distancia entre el rostro del usuario y la pantalla se encuentra en el rango de los 50 a 70 centímetros de longitud?</p>
+                        </div>
+                        <div class="flex gap-2 self-end sm:self-center">
+                            <button onclick="setCheck(2, true)" id="c2-yes" class="px-4 py-1.5 rounded-lg text-xs font-bold bg-slate-900 border border-slate-800 text-slate-400 transition hover:text-emerald-400">SÍ</button>
+                            <button onclick="setCheck(2, false)" id="c2-no" class="px-4 py-1.5 rounded-lg text-xs font-bold bg-slate-900 border border-slate-800 text-slate-400 transition hover:text-red-400">NO</button>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta 3: Soporte Lumbar -->
+                    <div id="card-step-3" class="bg-slate-950 p-4 rounded-2xl border border-slate-800/60 transition-all duration-300 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div class="flex-1">
+                            <span class="text-[10px] font-bold uppercase text-emerald-400 block">Paso 3: Soporte Lumbar</span>
+                            <p class="text-sm text-slate-200 font-medium">¿La silla cuenta con un soporte lumbar curvo que mantenga apoyada la zona baja de la espalda del usuario?</p>
+                        </div>
+                        <div class="flex gap-2 self-end sm:self-center">
+                            <button onclick="setCheck(3, true)" id="c3-yes" class="px-4 py-1.5 rounded-lg text-xs font-bold bg-slate-900 border border-slate-800 text-slate-400 transition hover:text-emerald-400">SÍ</button>
+                            <button onclick="setCheck(3, false)" id="c3-no" class="px-4 py-1.5 rounded-lg text-xs font-bold bg-slate-900 border border-slate-800 text-slate-400 transition hover:text-red-400">NO</button>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta 4: Apoyo de Pies -->
+                    <div id="card-step-4" class="bg-slate-950 p-4 rounded-2xl border border-slate-800/60 transition-all duration-300 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div class="flex-1">
+                            <span class="text-[10px] font-bold uppercase text-emerald-400 block">Paso 4: Apoyo de Pies</span>
+                            <p class="text-sm text-slate-200 font-medium">¿Los pies del colaborador descansan completamente planos sobre el suelo o cuenta con un apoyapies técnico complementario?</p>
+                        </div>
+                        <div class="flex gap-2 self-end sm:self-center">
+                            <button onclick="setCheck(4, true)" id="c4-yes" class="px-4 py-1.5 rounded-lg text-xs font-bold bg-slate-900 border border-slate-800 text-slate-400 transition hover:text-emerald-400">SÍ</button>
+                            <button onclick="setCheck(4, false)" id="c4-no" class="px-4 py-1.5 rounded-lg text-xs font-bold bg-slate-900 border border-slate-800 text-slate-400 transition hover:text-red-400">NO</button>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta 5: Espacio para Muñecas -->
+                    <div id="card-step-5" class="bg-slate-950 p-4 rounded-2xl border border-slate-800/60 transition-all duration-300 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div class="flex-1">
+                            <span class="text-[10px] font-bold uppercase text-emerald-400 block">Paso 5: Espacio para Muñecas</span>
+                            <p class="text-sm text-slate-200 font-medium">¿Existe un espacio libre de al menos 10 centímetros entre el teclado y el borde de la mesa para el apoyo de las muñecas?</p>
+                        </div>
+                        <div class="flex gap-2 self-end sm:self-center">
+                            <button onclick="setCheck(5, true)" id="c5-yes" class="px-4 py-1.5 rounded-lg text-xs font-bold bg-slate-900 border border-slate-800 text-slate-400 transition hover:text-emerald-400">SÍ</button>
+                            <button onclick="setCheck(5, false)" id="c5-no" class="px-4 py-1.5 rounded-lg text-xs font-bold bg-slate-900 border border-slate-800 text-slate-400 transition hover:text-red-400">NO</button>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta 6: Alineación de Periféricos -->
+                    <div id="card-step-6" class="bg-slate-950 p-4 rounded-2xl border border-slate-800/60 transition-all duration-300 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div class="flex-1">
+                            <span class="text-[10px] font-bold uppercase text-emerald-400 block">Paso 6: Alineación de Periféricos</span>
+                            <p class="text-sm text-slate-200 font-medium">¿El mouse y el teclado se encuentran ubicados en el mismo nivel horizontal para evitar asimetrías articulares?</p>
+                        </div>
+                        <div class="flex gap-2 self-end sm:self-center">
+                            <button onclick="setCheck(6, true)" id="c6-yes" class="px-4 py-1.5 rounded-lg text-xs font-bold bg-slate-900 border border-slate-800 text-slate-400 transition hover:text-emerald-400">SÍ</button>
+                            <button onclick="setCheck(6, false)" id="c6-no" class="px-4 py-1.5 rounded-lg text-xs font-bold bg-slate-900 border border-slate-800 text-slate-400 transition hover:text-red-400">NO</button>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta 7: Atención Telefónica Segura -->
+                    <div id="card-step-7" class="bg-slate-950 p-4 rounded-2xl border border-slate-800/60 transition-all duration-300 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div class="flex-1">
+                            <span class="text-[10px] font-bold uppercase text-emerald-400 block">Paso 7: Atención Telefónica Segura</span>
+                            <p class="text-sm text-slate-200 font-medium">Para el personal de atención al cliente: ¿Se cuenta con una diadema manos libres operativa que evite sostener el teléfono con el cuello?</p>
+                        </div>
+                        <div class="flex gap-2 self-end sm:self-center">
+                            <button onclick="setCheck(7, true)" id="c7-yes" class="px-4 py-1.5 rounded-lg text-xs font-bold bg-slate-900 border border-slate-800 text-slate-400 transition hover:text-emerald-400">SÍ</button>
+                            <button onclick="setCheck(7, false)" id="c7-no" class="px-4 py-1.5 rounded-lg text-xs font-bold bg-slate-900 border border-slate-800 text-slate-400 transition hover:text-red-400">NO</button>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta 8: Orden en Estación de Trabajo -->
+                    <div id="card-step-8" class="bg-slate-950 p-4 rounded-2xl border border-slate-800/60 transition-all duration-300 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div class="flex-1">
+                            <span class="text-[10px] font-bold uppercase text-emerald-400 block">Paso 8: Orden en Estación de Trabajo</span>
+                            <p class="text-sm text-slate-200 font-medium">¿El espacio debajo del escritorio se encuentra libre de cajas, objetos o cables que impidan el libre movimiento de las piernas?</p>
+                        </div>
+                        <div class="flex gap-2 self-end sm:self-center">
+                            <button onclick="setCheck(8, true)" id="c8-yes" class="px-4 py-1.5 rounded-lg text-xs font-bold bg-slate-900 border border-slate-800 text-slate-400 transition hover:text-emerald-400">SÍ</button>
+                            <button onclick="setCheck(8, false)" id="c8-no" class="px-4 py-1.5 rounded-lg text-xs font-bold bg-slate-900 border border-slate-800 text-slate-400 transition hover:text-red-400">NO</button>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta 9: Programa de Pausas Activas -->
+                    <div id="card-step-9" class="bg-slate-950 p-4 rounded-2xl border border-slate-800/60 transition-all duration-300 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div class="flex-1">
+                            <span class="text-[10px] font-bold uppercase text-emerald-400 block">Paso 9: Programa de Pausas Activas</span>
+                            <p class="text-sm text-slate-200 font-medium">¿El trabajador interrumpe su labor para realizar las pausas activas matutinas y vespertinas obligatorias?</p>
+                        </div>
+                        <div class="flex gap-2 self-end sm:self-center">
+                            <button onclick="setCheck(9, true)" id="c9-yes" class="px-4 py-1.5 rounded-lg text-xs font-bold bg-slate-900 border border-slate-800 text-slate-400 transition hover:text-emerald-400">SÍ</button>
+                            <button onclick="setCheck(9, false)" id="c9-no" class="px-4 py-1.5 rounded-lg text-xs font-bold bg-slate-900 border border-slate-800 text-slate-400 transition hover:text-red-400">NO</button>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta 10: Nivel de Iluminación -->
+                    <div id="card-step-10" class="bg-slate-950 p-4 rounded-2xl border border-slate-800/60 transition-all duration-300 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div class="flex-1">
+                            <span class="text-[10px] font-bold uppercase text-emerald-400 block">Paso 10: Nivel de Iluminación</span>
+                            <p class="text-sm text-slate-200 font-medium">¿El nivel de iluminación sobre el plano de trabajo es adecuado y se encuentra libre de reflejos molestos en la pantalla?</p>
+                        </div>
+                        <div class="flex gap-2 self-end sm:self-center">
+                            <button onclick="setCheck(10, true)" id="c10-yes" class="px-4 py-1.5 rounded-lg text-xs font-bold bg-slate-900 border border-slate-800 text-slate-400 transition hover:text-emerald-400">SÍ</button>
+                            <button onclick="setCheck(10, false)" id="c10-no" class="px-4 py-1.5 rounded-lg text-xs font-bold bg-slate-900 border border-slate-800 text-slate-400 transition hover:text-red-400">NO</button>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Generador de Reportes Diagnósticos en Vivo (4 de 12 columnas) -->
+                <div class="lg:col-span-4 bg-slate-950 p-5 rounded-2xl border border-slate-800/80 flex flex-col justify-between">
+                    <div>
+                        <span class="text-[9px] font-bold text-emerald-400 uppercase tracking-widest block mb-1">REPORTE EN TIEMPO REAL</span>
+                        <h4 class="text-sm font-extrabold text-white heading-font border-b border-slate-800 pb-3 mb-3">Diagnóstico Consultores</h4>
+                        
+                        <div class="space-y-3 text-xs leading-relaxed">
+                            <div class="flex justify-between">
+                                <span class="text-slate-500 font-bold">Puesto Evaluado:</span>
+                                <span class="text-white font-semibold">Tecnoservicios #42</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-500 font-bold">Auditor Responsable:</span>
+                                <span class="text-emerald-400 font-semibold">Consultora de Turno</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-500 font-bold">Marco Legal:</span>
+                                <span class="text-emerald-400 font-semibold">Decreto 1072 / Res. 0312</span>
+                            </div>
+                            
+                            <div class="bg-slate-900 p-3 rounded-xl border border-slate-800/50 mt-4">
+                                <h5 class="text-[10px] font-extrabold text-slate-400 mb-1.5 uppercase">Acción de Mejora Sugerida:</h5>
+                                <p id="report-action" class="text-slate-300 font-medium">Completa la auditoría oficial seleccionando "SÍ" o "NO" en los 10 pasos para generar la acción de mejora reglamentaria de ingeniería.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2 mt-6">
+                        <button onclick="saveAudit()" class="w-full py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs rounded-xl transition shadow-lg shadow-emerald-500/10">
+                            Guardar Auditoría
+                        </button>
+                        <button onclick="resetChecklist()" class="w-full py-2 bg-slate-900 hover:bg-slate-800 text-slate-400 font-bold text-xs rounded-xl border border-slate-800 transition">
+                            Reiniciar Inspección
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Pie de página de la consultora -->
+    <footer class="border-t border-slate-800 bg-slate-950 py-4 px-6 mt-12 text-center text-xs text-slate-500">
+        <p>Equipo de Consultoría en Seguridad y Salud en el Trabajo (SST) - Santiago de Cali, Colombia © 2026.</p>
+    </footer>
+
+    <script>
+        // Mapeo técnico completo de hotspots ergonómicos corporativos
+        const data = {
+            ojos: {
+                category: "Fatiga Ocular & Regla 20-20-20",
+                title: "Pantallas de Visualización (PVD)",
+                legal: "Res. 2400 (1979)",
+                old: "Recomendar colocar la pantalla por debajo de la línea del ojo, forzando flexiones nocivas del cuello y fatiga visual al tener reflejos directos en el monitor.",
+                new: "Alinear el borde superior de la pantalla de forma estrictamente horizontal con el eje visual. Inclinación del monitor hacia atrás entre 10° y 20°. Distancia de 50 a 70 cm.",
+                physio: "Mirar hacia abajo constantemente cansa el músculo ocular ciliar y reseca la córnea al disminuir el parpadeo natural. Con el rediseño y la Regla 20-20-20 (mirar a 6 metros cada 20 minutos por 20 segundos) se restablece el equilibrio de lubricación ocular."
+            },
+            cuello: {
+                category: "Cervicalgias & Tensión Craneal",
+                title: "Atención Telefónica Segura",
+                legal: "Decreto 1072 (2015)",
+                old: "Permitir e instruir sostener el auricular telefónico de mano convencional presionándolo lateralmente de forma forzada entre la cabeza y el hombro.",
+                new: "Uso obligatorio e indiscutible de sistemas de diademas manos libres (headsets) para toda la jornada de llamadas de los colaboradores administrativos.",
+                physio: "Por cada centímetro que inclinamos la cabeza hacia los lados, el peso real que soportan los trapecios y las vértebras cervicales se duplica por el brazo de palanca. Genera contracturas severas, cefaleas tensionales y micro-traumas repetitivos."
+            },
+            espalda: {
+                category: "Presión Discal L4-S1",
+                title: "Higiene Postural de Columna",
+                legal: "Ley 1562 de 2012",
+                old: "Instruir levantar cargas doblando la espalda con las piernas totalmente rectas y autorizar el uso de cualquier silla ordinaria sin características lumbares.",
+                new: "Levantar doblando rodillas con espalda erguida, impulsándose con la fuerza de las piernas. Silla ergonómica certificada de 5 ruedas y soporte lumbar regulable.",
+                physio: "Doblar la espalda con piernas rectas genera una compresión biomecánica extrema sobre los discos intervertebrales L4-S1. El soporte lumbar correcto de la silla de oficina mantiene la lordosis fisiológica natural de la columna vertebral y reduce la tensión discal en más de un 40%."
+            },
+            munecas: {
+                category: "Síndrome del Túnel Carpiano",
+                title: "Zonificación y Apoyo de Muñeca",
+                legal: "Res. 0312 de 2019",
+                old: "Omitir los riesgos de la digitación, forzando el uso de teclados al borde de las mesas sin espacio físico para apoyar y descansar las articulaciones de la mano.",
+                new: "Dejar una distancia libre mínima de 10 cm entre el teclado y el borde del escritorio para reposar muñecas. Organizar accesorios en un radio de 25 cm para evitar estiramientos.",
+                physio: "Digitar con las muñecas en el aire (en flexión continua) comprime el nervio mediano a su paso por el canal del túnel carpiano. Brindar los 10 cm de soporte elimina la compresión directa de los tendones, evitando tendinitis y desórdenes musculoesqueléticos."
+            },
+            pies: {
+                category: "Isquemia & Retorno Venoso",
+                title: "Apoyapiés e Isquemia",
+                legal: "Res. 2400 (1979)",
+                old: "Obligar a permanecer sentado en inmovilidad absoluta durante toda la jornada de trabajo, tolerando que los pies de los trabajadores queden suspendidos sin tocar el piso.",
+                new: "Realizar pausas activas obligatorias de 8 a 10 min en horarios fijos (10 AM y 3 PM). Integración obligatoria de apoyapiés técnico antideslizante si los pies no apoyan plano.",
+                physio: "Tener los pies colgando ejerce presión mecánica en la fosa poplítea (detrás de los muslos), obstruyendo los vasos sanguíneos y causando estasis venosa. Los músculos quietos acumulan ácido láctico (isquemia) por falta de flujo de oxígeno. El apoyapiés y las pausas activas reactivan el bombeo sanguíneo de retorno."
+            }
+        };
+
+        const listKeys = ["ojos", "cuello", "espalda", "munecas", "pies"];
+        let currentIndex = 0;
+
+        // Mostrar de forma predeterminada el nodo "ojos" al cargar
+        selectHotspot("ojos");
+
+        function selectHotspot(key) {
+            currentIndex = listKeys.indexOf(key);
+            const activeData = data[key];
+
+            // Renderizar datos en el panel
+            document.getElementById("panel-category").textContent = activeData.category;
+            document.getElementById("panel-title").textContent = activeData.title;
+            document.getElementById("panel-legal").textContent = activeData.legal;
+            document.getElementById("panel-old").textContent = activeData.old;
+            document.getElementById("panel-new").textContent = activeData.new;
+            document.getElementById("panel-physio").textContent = activeData.physio;
+
+            // Actualizar estilo visual activo de los botones hotspots
+            listKeys.forEach(k => {
+                const el = document.getElementById("hs-" + k);
+                if (k === key) {
+                    el.classList.add("scale-125", "border-white");
+                } else {
+                    el.classList.remove("scale-125", "border-white");
+                }
+            });
+        }
+
+        function nextHotspot() {
+            currentIndex = (currentIndex + 1) % listKeys.length;
+            selectHotspot(listKeys[currentIndex]);
+        }
+
+        function prevHotspot() {
+            currentIndex = (currentIndex - 1 + listKeys.length) % listKeys.length;
+            selectHotspot(listKeys[currentIndex]);
+        }
+
+        // CONTROLADOR DE PESTAÑAS (Modo Diagnóstico vs Modo Auditoría)
+        function setMode(mode) {
+            const diagSec = document.getElementById("section-diagnostico");
+            const auditSec = document.getElementById("section-auditoria");
+            const btnDiag = document.getElementById("btn-mode-diag");
+            const btnAudit = document.getElementById("btn-mode-audit");
+
+            if (mode === 'diagnostico') {
+                diagSec.classList.remove("hidden");
+                diagSec.classList.add("grid");
+                auditSec.classList.add("hidden");
+
+                btnDiag.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-emerald-500 text-slate-950";
+                btnAudit.className = "px-3 py-1.5 rounded-lg text-xs font-bold text-slate-400 transition-all hover:text-white";
+            } else {
+                diagSec.classList.remove("grid");
+                diagSec.classList.add("hidden");
+                auditSec.classList.remove("hidden");
+                auditSec.classList.add("flex");
+
+                btnDiag.className = "px-3 py-1.5 rounded-lg text-xs font-bold text-slate-400 transition-all hover:text-white";
+                btnAudit.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-emerald-500 text-slate-950";
+                
+                calculateCompliance();
+            }
+        }
+
+        // Inicializar objeto de almacenamiento del checklist de 10 puntos (null = sin responder)
+        const checklist = {
+            1: null, 2: null, 3: null, 4: null, 5: null,
+            6: null, 7: null, 8: null, 9: null, 10: null
+        };
+
+        function setCheck(step, value) {
+            checklist[step] = value;
+
+            const yesBtn = document.getElementById(`c${step}-yes`);
+            const noBtn = document.getElementById(`c${step}-no`);
+            const cardEl = document.getElementById(`card-step-${step}`);
+
+            // Actualización de estilos de botones de selección
+            if (value) {
+                yesBtn.className = "px-4 py-1.5 rounded-lg text-xs font-bold bg-emerald-500 text-slate-950 transition-all duration-200 shadow-md shadow-emerald-500/20";
+                noBtn.className = "px-4 py-1.5 rounded-lg text-xs font-bold bg-slate-900 border border-slate-800 text-slate-500 transition-all duration-200";
+                cardEl.className = "bg-slate-950 p-4 rounded-2xl border border-emerald-500/30 transition-all duration-300 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-lg shadow-emerald-950/10";
+            } else {
+                yesBtn.className = "px-4 py-1.5 rounded-lg text-xs font-bold bg-slate-900 border border-slate-800 text-slate-500 transition-all duration-200";
+                noBtn.className = "px-4 py-1.5 rounded-lg text-xs font-bold bg-red-600 text-white transition-all duration-200 shadow-md shadow-red-500/20";
+                cardEl.className = "bg-slate-950 p-4 rounded-2xl border border-red-500/30 transition-all duration-300 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-lg shadow-red-950/10";
+            }
+
+            calculateCompliance();
+        }
+
+        // Calcula el porcentaje de cumplimiento y actualiza la UI
+        function calculateCompliance() {
+            let answered = 0;
+            let positives = 0;
+
+            for (let k in checklist) {
+                if (checklist[k] !== null) {
+                    answered++;
+                    if (checklist[k] === true) positives++;
+                }
+            }
+
+            document.getElementById("evaluation-progress-text").textContent = `${answered} de 10 respondidos`;
+
+            if (answered === 0) {
+                document.getElementById("score-percentage").textContent = `0%`;
+                document.getElementById("score-text").textContent = "Esperando Datos";
+                document.getElementById("score-text").className = "text-sm font-extrabold text-slate-400 mt-1 block";
+                document.getElementById("gauge-progress").setAttribute("stroke-dasharray", "0, 100");
+                document.getElementById("gauge-progress").className = "text-slate-700 transition-all duration-500 ease-out";
+                return;
+            }
+
+            const percentage = Math.round((positives / 10) * 100);
+            document.getElementById("score-percentage").textContent = `${percentage}%`;
+            
+            const progressCircle = document.getElementById("gauge-progress");
+            progressCircle.setAttribute("stroke-dasharray", `${percentage}, 100`);
+            
+            const scoreLabel = document.getElementById("score-text");
+            const reportAction = document.getElementById("report-action");
+
+            // Matriz lógica de reportes regulatorios
+            if (percentage >= 80) {
+                scoreLabel.textContent = "Conforme (Bajo Riesgo)";
+                scoreLabel.className = "text-sm font-extrabold text-emerald-400 mt-1 block";
+                progressCircle.className = "text-emerald-500 transition-all duration-500 ease-out";
+                reportAction.textContent = "¡Puesto óptimo! Cumple de forma satisfactoria con los estándares del manual. Se sugiere mantener el cronograma de pausas activas programadas a las 10:00 AM y 3:00 PM.";
+            } else if (percentage >= 50) {
+                scoreLabel.textContent = "Mejora Requerida";
+                scoreLabel.className = "text-sm font-extrabold text-amber-400 mt-1 block";
+                progressCircle.className = "text-amber-500 transition-all duration-500 ease-out";
+                reportAction.textContent = "Intervención técnica requerida: Programar adecuación de periféricos externos (elevador, teclado/mouse), solicitar apoyapiés técnico o despejar la zona de pies en un plazo de 15 días hábiles.";
+            } else {
+                scoreLabel.textContent = "Alerta Crítica (Alto Riesgo)";
+                scoreLabel.className = "text-sm font-extrabold text-red-500 mt-1 block";
+                progressCircle.className = "text-red-500 transition-all duration-500 ease-out";
+                reportAction.textContent = "¡Riesgo severo de desorden osteomuscular! Ordenar adecuación inmediata de la silla a una certificada (Res. 2400), entrega obligatoria de diademas manos libres y citación a re-capacitación prioritaria.";
+            }
+        }
+
+        // Guardar auditoría (Simulado con Toast)
+        function saveAudit() {
+            let answered = 0;
+            for (let k in checklist) {
+                if (checklist[k] !== null) answered++;
+            }
+
+            const toast = document.getElementById("toast");
+            const toastMsg = document.getElementById("toast-message");
+
+            if (answered < 10) {
+                toastMsg.textContent = `Atención: Por favor califica los ${10 - answered} puntos restantes antes de guardar.`;
+                toast.className = "fixed bottom-6 right-6 transform translate-y-0 opacity-100 bg-amber-500 text-slate-950 px-6 py-4 rounded-2xl shadow-2xl font-bold flex items-center gap-3 z-50 transition-all duration-300";
+            } else {
+                toastMsg.textContent = "¡Auditoría del puesto #42 enviada con éxito al sistema de Tecnoservicios!";
+                toast.className = "fixed bottom-6 right-6 transform translate-y-0 opacity-100 bg-emerald-500 text-slate-950 px-6 py-4 rounded-2xl shadow-2xl font-bold flex items-center gap-3 z-50 transition-all duration-300";
+            }
+
+            setTimeout(() => {
+                toast.className = "fixed bottom-6 right-6 transform translate-y-20 opacity-0 bg-emerald-500 text-slate-950 px-6 py-4 rounded-2xl shadow-2xl font-bold flex items-center gap-3 z-50 transition-all duration-300 pointer-events-none";
+            }, 3500);
+        }
+
+        // Reiniciar inspección de auditoría
+        function resetChecklist() {
+            for (let k in checklist) {
+                checklist[k] = null;
+                document.getElementById(`c${k}-yes`).className = "px-4 py-1.5 rounded-lg text-xs font-bold bg-slate-900 border border-slate-800 text-slate-400 transition hover:text-emerald-400";
+                document.getElementById(`c${k}-no`).className = "px-4 py-1.5 rounded-lg text-xs font-bold bg-slate-900 border border-slate-800 text-slate-400 transition hover:text-red-400";
+                document.getElementById(`card-step-${k}`).className = "bg-slate-950 p-4 rounded-2xl border border-slate-800/60 transition-all duration-300 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4";
+            }
+            
+            document.getElementById("evaluation-progress-text").textContent = "0 de 10 respondidos";
+            document.getElementById("score-percentage").textContent = `0%`;
+            document.getElementById("score-text").textContent = "Esperando Datos";
+            document.getElementById("score-text").className = "text-sm font-extrabold text-slate-400 mt-1 block";
+            document.getElementById("gauge-progress").setAttribute("stroke-dasharray", "0, 100");
+            document.getElementById("gauge-progress").className = "text-slate-700 transition-all duration-500 ease-out";
+            document.getElementById("report-action").textContent = "Completa la auditoría oficial seleccionando \"SÍ\" o \"NO\" en los 10 pasos para generar la acción de mejora reglamentaria de ingeniería.";
+        }
+    </script>
+</body>
+</html>
+```eot
