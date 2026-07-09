@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SST Prep Pro: Tecnoservicios del Pacífico</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap');
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .heading-font {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        /* Card Flip Animation */
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+        .preserve-3d {
+            transform-style: preserve-3d;
+        }
+        .backface-hidden {
+            backface-visibility: hidden;
+        }
+        .rotate-y-180 {
+            transform: rotateY(180deg);
+        }
+        /* Custom scrollbar */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.3);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #10b981;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-emerald-500 selection:text-slate-950">
+
+    <!-- Header Navigation -->
+    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50 px-4 py-3">
+        <div class="max-w-md mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <div class="p-1.5 bg-emerald-500/10 rounded-lg border border-emerald-500/20 text-emerald-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-sm font-bold heading-font text-white leading-tight">SST Trainer Móvil</h1>
+                    <p class="text-[10px] text-emerald-400 font-semibold uppercase tracking-wider">Machete Grupal</p>
+                </div>
+            </div>
+            <!-- Consultores -->
+            <div class="flex gap-1">
+                <span class="text-[9px] font-bold px-1.5 py-0.5 bg-slate-950 rounded border border-slate-800 text-slate-400">G</span>
+                <span class="text-[9px] font-bold px-1.5 py-0.5 bg-slate-950 rounded border border-slate-800 text-slate-400">I</span>
+                <span class="text-[9px] font-bold px-1.5 py-0.5 bg-slate-950 rounded border border-slate-800 text-slate-400">L</span>
+                <span class="text-[9px] font-bold px-1.5 py-0.5 bg-slate-950 rounded border border-slate-800 text-slate-400">N</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 max-w-md w-full mx-auto p-4 flex flex-col gap-4">
+        
+        <!-- Tab Controller Button Bar -->
+        <div class="bg-slate-900/50 p-1 rounded-xl border border-slate-800 flex flex-wrap gap-1">
+            <button onclick="switchTab('flashcards')" id="tab-flashcards" class="flex-1 py-2 rounded-lg text-xs font-bold transition-all bg-emerald-500 text-slate-950">
+                🎴 Tarjetas
+            </button>
+            <button onclick="switchTab('slides')" id="tab-slides" class="flex-1 py-2 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white">
+                🗺️ Diapositivas
+            </button>
+            <button onclick="switchTab('quiz')" id="tab-quiz" class="flex-1 py-2 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white">
+                📝 Simulacro
+            </button>
+            <button onclick="switchTab('glosario')" id="tab-glosario" class="flex-1 py-2 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white">
+                ⚖️ Glosario
+            </button>
+        </div>
+
+        <!-- TAB 1: INTERACTIVE FLASHCARDS DECK (15 Cards) -->
+        <div id="panel-flashcards" class="flex-1 flex flex-col justify-between gap-4">
+            <div class="text-center">
+                <span class="text-[10px] font-bold uppercase tracking-widest text-slate-500">Memorización Activa</span>
+                <h2 class="text-base font-extrabold text-white heading-font mt-0.5">Conceptos Clave de la Consultoría</h2>
+            </div>
+
+            <!-- Card Container -->
+            <div class="perspective-1000 w-full h-[280px] cursor-pointer" onclick="flipCard()">
+                <div id="flashcard" class="preserve-3d relative w-full h-full transition-transform duration-500 preserve-3d">
+                    
+                    <!-- Front Side -->
+                    <div class="absolute inset-0 w-full h-full bg-slate-900 border-2 border-slate-800 rounded-3xl p-6 flex flex-col justify-between backface-hidden shadow-xl">
+                        <div class="flex justify-between items-center">
+                            <span id="card-tag" class="text-[9px] font-bold bg-emerald-950/50 text-emerald-400 border border-emerald-800/30 px-2.5 py-1 rounded-full uppercase tracking-wider">Categoría</span>
+                            <span id="card-counter" class="text-xs text-slate-500 font-bold">1 / 15</span>
+                        </div>
+                        <div class="text-center py-4">
+                            <p id="card-front-text" class="text-base font-extrabold text-white heading-font px-2">Cargando...</p>
+                        </div>
+                        <div class="text-center">
+                            <span class="text-[10px] text-slate-500 font-medium animate-pulse">💡 Pulsa para voltear la tarjeta</span>
+                        </div>
+                    </div>
+
+                    <!-- Back Side (Rotated) -->
+                    <div class="absolute inset-0 w-full h-full bg-slate-900 border-2 border-emerald-500/40 rounded-3xl p-6 flex flex-col justify-between backface-hidden rotate-y-180 shadow-2xl">
+                        <div class="flex justify-between items-center">
+                            <span class="text-[9px] font-bold bg-emerald-500 text-slate-950 px-2.5 py-1 rounded-full uppercase tracking-wider">RESPUESTA TÉCNICA</span>
+                            <span class="text-emerald-400 text-xs">🛡️ Escudo de SST</span>
+                        </div>
+                        <div class="text-center py-2 overflow-y-auto max-h-[140px] custom-scrollbar pr-1">
+                            <p id="card-back-text" class="text-sm font-semibold text-slate-200 leading-relaxed">Cargando...</p>
+                        </div>
+                        <div class="bg-slate-950 p-2 rounded-xl border border-slate-800 text-center">
+                            <span class="text-[9px] font-bold text-slate-500 uppercase block">Pista de Memoria</span>
+                            <p id="card-hint-text" class="text-[10px] text-slate-400 italic">Pista aquí...</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Card Controls -->
+            <div class="flex justify-between items-center gap-4 mt-2">
+                <button onclick="prevCard()" class="flex-1 py-3 bg-slate-900 border border-slate-800 hover:bg-slate-800 text-slate-300 font-bold rounded-2xl transition text-xs">
+                    ← Anterior
+                </button>
+                <button onclick="flipCard()" class="p-3 bg-emerald-950 text-emerald-400 border border-emerald-500/30 rounded-2xl font-bold transition text-xs">
+                    🔄 Voltear
+                </button>
+                <button onclick="nextCard()" class="flex-1 py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold rounded-2xl transition text-xs shadow-lg shadow-emerald-500/10">
+                    Siguiente →
+                </button>
+            </div>
+        </div>
+
+        <!-- TAB 2: INTERACTIVE SLIDES VIEW -->
+        <div id="panel-slides" class="flex-1 flex flex-col justify-between gap-4 hidden">
+            <div class="text-center">
+                <span class="text-[10px] font-bold uppercase tracking-widest text-slate-500">Machete de Diapositivas</span>
+                <div class="flex justify-between items-center mt-1 px-1">
+                    <span id="slide-number-lbl" class="text-xs text-emerald-400 font-bold">Diapositiva 1 de 12</span>
+                    <span id="slide-category-lbl" class="text-xs text-slate-400 font-semibold">Introducción</span>
+                </div>
+            </div>
+
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-xl flex-1 flex flex-col justify-between max-h-[420px] overflow-y-auto custom-scrollbar">
+                <div class="space-y-4">
+                    <h3 id="slide-title-lbl" class="text-lg font-extrabold text-white heading-font border-b border-slate-800 pb-2">Título</h3>
+                    
+                    <div class="bg-slate-950 p-3 rounded-xl border border-slate-800/80">
+                        <span class="text-[9px] font-bold text-slate-500 uppercase block tracking-wider">💡 Idea Fuerza</span>
+                        <p id="slide-idea-lbl" class="text-xs text-slate-200 mt-1 font-semibold italic">---</p>
+                    </div>
+
+                    <div class="bg-slate-950 p-3 rounded-xl border border-slate-800/80">
+                        <span class="text-[9px] font-bold text-emerald-400 uppercase block tracking-wider">🗣️ Guía de Discurso (Hablen Natural)</span>
+                        <p id="slide-speech-lbl" class="text-xs text-slate-300 mt-1 leading-relaxed">---</p>
+                    </div>
+
+                    <div class="bg-red-950/20 p-3 rounded-xl border border-red-900/30">
+                        <span class="text-[9px] font-bold text-red-400 uppercase block tracking-wider">⚠️ Pregunta Trampa</span>
+                        <p id="slide-trap-lbl" class="text-xs text-white mt-1 font-medium">---</p>
+                    </div>
+
+                    <div class="bg-emerald-950/20 p-3 rounded-xl border border-emerald-900/30">
+                        <span class="text-[9px] font-bold text-emerald-400 uppercase block tracking-wider">🛡️ Escudo Técnico</span>
+                        <p id="slide-shield-lbl" class="text-xs text-slate-200 mt-1 leading-relaxed font-semibold">---</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slides Navigation Controls -->
+            <div class="flex justify-between items-center gap-4">
+                <button onclick="prevSlide()" class="flex-1 py-3 bg-slate-900 border border-slate-800 hover:bg-slate-800 text-slate-300 font-bold rounded-2xl transition text-xs">
+                    ← Slide Anterior
+                </button>
+                <button onclick="nextSlide()" class="flex-1 py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold rounded-2xl transition text-xs shadow-lg shadow-emerald-500/10">
+                    Siguiente Slide →
+                </button>
+            </div>
+        </div>
+
+        <!-- TAB 3: MOCK EXAM SIMULATOR (10 Questions) -->
+        <div id="panel-quiz" class="flex-1 flex flex-col justify-between gap-4 hidden">
+            <div class="text-center">
+                <span class="text-[10px] font-bold uppercase tracking-widest text-slate-500">Simulador de Preguntas Trampa</span>
+                <div class="flex justify-between items-center mt-1 px-1">
+                    <span id="quiz-question-counter" class="text-xs text-emerald-400 font-bold">Pregunta 1 de 10</span>
+                    <span id="quiz-score" class="text-xs text-slate-400 font-semibold">Puntaje: 0 / 0</span>
+                </div>
+            </div>
+
+            <!-- Quiz Card Box -->
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-xl flex-1 flex flex-col justify-between max-h-[420px] overflow-y-auto custom-scrollbar">
+                <div>
+                    <h3 id="quiz-question-text" class="text-sm font-extrabold text-white leading-relaxed heading-font mb-4">Pregunta de prueba aquí</h3>
+                    
+                    <!-- Options Container -->
+                    <div id="quiz-options-container" class="space-y-2">
+                        <!-- Options generated dynamically -->
+                    </div>
+                </div>
+
+                <!-- Feedback Display Panel (Initially Hidden) -->
+                <div id="quiz-feedback-panel" class="mt-4 p-3.5 rounded-xl border hidden transition-all duration-300">
+                    <span id="quiz-feedback-title" class="text-[10px] font-extrabold uppercase block tracking-wider">Correcto / Incorrecto</span>
+                    <p id="quiz-feedback-body" class="text-xs text-slate-300 mt-1 leading-relaxed">Explicación.</p>
+                </div>
+            </div>
+
+            <!-- Action Controls -->
+            <div class="flex gap-2">
+                <button id="quiz-action-btn" onclick="submitQuizAnswer()" class="w-full py-3.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold rounded-2xl transition text-xs shadow-lg shadow-emerald-500/10">
+                    Verificar Respuesta
+                </button>
+            </div>
+        </div>
+
+        <!-- TAB 4: LEGAL CHEAT SHEET & GLOSSARY (10 Terms) -->
+        <div id="panel-glosario" class="flex-1 flex flex-col gap-3 hidden">
+            <div class="text-center">
+                <span class="text-[10px] font-bold uppercase tracking-widest text-slate-500">Soporte Jurídico y Biomecánico</span>
+                <h2 class="text-base font-extrabold text-white heading-font mt-0.5">Machete de Emergencia SST</h2>
+            </div>
+
+            <!-- Search input -->
+            <div class="relative">
+                <input type="text" id="glossary-search" oninput="filterGlossary()" placeholder="Buscar norma o concepto físico..." class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-emerald-500/50">
+            </div>
+
+            <!-- Scrollable Glossary List -->
+            <div id="glossary-list" class="flex-1 max-h-[330px] overflow-y-auto pr-1 space-y-2.5 custom-scrollbar">
+                
+                <!-- Term 1 -->
+                <div class="bg-slate-900/60 p-4 rounded-2xl border border-slate-800/80 glossary-item">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-xs font-extrabold text-emerald-400 heading-font">Ley 1562 de 2012</span>
+                        <span class="text-[8px] font-bold bg-slate-950 text-slate-400 px-2 py-0.5 rounded border border-slate-800 uppercase">Salud Laboral</span>
+                    </div>
+                    <p class="text-xs text-slate-300 leading-relaxed">Sistema General de Riesgos Laborales en Colombia. Dictamina que el diseño de entornos seguros y la prevención de enfermedades osteomusculares es responsabilidad legal directa de la empresa.</p>
+                </div>
+
+                <!-- Term 2 -->
+                <div class="bg-slate-900/60 p-4 rounded-2xl border border-slate-800/80 glossary-item">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-xs font-extrabold text-emerald-400 heading-font">Decreto 1072 de 2015</span>
+                        <span class="text-[8px] font-bold bg-slate-950 text-slate-400 px-2 py-0.5 rounded border border-slate-800 uppercase">SG-SST Obligatorio</span>
+                    </div>
+                    <p class="text-xs text-slate-300 leading-relaxed">Decreto Único Reglamentario del Sector Trabajo. Exige la implementación obligatoria de un Sistema de Gestión (SG-SST) enfocado en la prevención y control estricto de peligros biomecánicos.</p>
+                </div>
+
+                <!-- Term 3 -->
+                <div class="bg-slate-900/60 p-4 rounded-2xl border border-slate-800/80 glossary-item">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-xs font-extrabold text-emerald-400 heading-font">Resolución 2400 de 1979</span>
+                        <span class="text-[8px] font-bold bg-slate-950 text-slate-400 px-2 py-0.5 rounded border border-slate-800 uppercase">Estatuto de Seguridad</span>
+                    </div>
+                    <p class="text-xs text-slate-300 leading-relaxed">Define las especificaciones sanitarias y ergonómicas que deben cumplir los puestos de oficina (sillas, mesas, iluminación libre de reflejos) para mitigar la fatiga física y proteger la salud.</p>
+                </div>
+
+                <!-- Term 4 -->
+                <div class="bg-slate-900/60 p-4 rounded-2xl border border-slate-800/80 glossary-item">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-xs font-extrabold text-emerald-400 heading-font">Resolución 0312 de 2019</span>
+                        <span class="text-[8px] font-bold bg-slate-950 text-slate-400 px-2 py-0.5 rounded border border-slate-800 uppercase">Estándares Mínimos</span>
+                    </div>
+                    <p class="text-xs text-slate-300 leading-relaxed">Establece los estándares mínimos de SST obligatorios. Exige auditar, vigilar epidemiológicamente e implementar un sistema estructurado de inspecciones para la población de Tecnoservicios.</p>
+                </div>
+
+                <!-- Term 5 -->
+                <div class="bg-slate-900/60 p-4 rounded-2xl border border-slate-800/80 glossary-item">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-xs font-extrabold text-sky-400 heading-font">Isquemia Muscular</span>
+                        <span class="text-[8px] font-bold bg-slate-950 text-slate-400 px-2 py-0.5 rounded border border-slate-800 uppercase">Fisiopatología</span>
+                    </div>
+                    <p class="text-xs text-slate-300 leading-relaxed">Disminución extrema del riego de sangre oxigenada en los músculos. Ocurre por inmovilidad prolongada (contracción estática), impidiendo la eliminación del ácido láctico y provocando dolores crónicos.</p>
+                </div>
+
+                <!-- Term 6 -->
+                <div class="bg-slate-900/60 p-4 rounded-2xl border border-slate-800/80 glossary-item">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-xs font-extrabold text-sky-400 heading-font">Ácido Láctico</span>
+                        <span class="text-[8px] font-bold bg-slate-950 text-slate-400 px-2 py-0.5 rounded border border-slate-800 uppercase">Fisiopatología</span>
+                    </div>
+                    <p class="text-xs text-slate-300 leading-relaxed">Subproducto metabólico que se acumula en los músculos al realizar un esfuerzo continuado de inmovilidad sin oxígeno suficiente. Es la causa directa del dolor y fatiga muscular.</p>
+                </div>
+
+                <!-- Term 7 -->
+                <div class="bg-slate-900/60 p-4 rounded-2xl border border-slate-800/80 glossary-item">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-xs font-extrabold text-amber-400 heading-font">Síndrome de "Cuello de Texto"</span>
+                        <span class="text-[8px] font-bold bg-slate-950 text-slate-400 px-2 py-0.5 rounded border border-slate-800 uppercase">Patologías</span>
+                    </div>
+                    <p class="text-xs text-slate-300 leading-relaxed">Tensión acumulada en la columna cervical por inclinar la cabeza hacia adelante (flexión >15°) al mirar pantallas bajas, duplicando o triplicando el peso real que soporta el cuello.</p>
+                </div>
+
+                <!-- Term 8 -->
+                <div class="bg-slate-900/60 p-4 rounded-2xl border border-slate-800/80 glossary-item">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-xs font-extrabold text-amber-400 heading-font">Síndrome del Túnel Carpiano</span>
+                        <span class="text-[8px] font-bold bg-slate-950 text-slate-400 px-2 py-0.5 rounded border border-slate-800 uppercase">Patologías</span>
+                    </div>
+                    <p class="text-xs text-slate-300 leading-relaxed">Compresión del nervio mediano en la muñeca al digitar de forma repetitiva con las muñecas en flexión continua, debido a la falta de espacio de apoyo mínimo de 10 cm en el escritorio.</p>
+                </div>
+
+                <!-- Term 9 -->
+                <div class="bg-slate-900/60 p-4 rounded-2xl border border-slate-800/80 glossary-item">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-xs font-extrabold text-red-400 heading-font">Presión Discal L4-S1</span>
+                        <span class="text-[8px] font-bold bg-slate-950 text-slate-400 px-2 py-0.5 rounded border border-slate-800 uppercase">Biomecánica</span>
+                    </div>
+                    <p class="text-xs text-slate-300 leading-relaxed">Carga o compresión que sufren los discos de la zona baja lumbar al flexionar la espalda con las piernas rectas para levantar pesos. Provoca lumbalgias agudas y hernias.</p>
+                </div>
+
+                <!-- Term 10 -->
+                <div class="bg-slate-900/60 p-4 rounded-2xl border border-slate-800/80 glossary-item">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-xs font-extrabold text-amber-400 heading-font">Compresión Poplítea</span>
+                        <span class="text-[8px] font-bold bg-slate-950 text-slate-400 px-2 py-0.5 rounded border border-slate-800 uppercase">Circulatorio</span>
+                    </div>
+                    <p class="text-xs text-slate-300 leading-relaxed">Presión mecánica detrás de los muslos cuando las piernas del trabajador flotan o quedan colgando. Obstruye los vasos sanguíneos y provoca estasis venoso y várices.</p>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer static information -->
+    <footer class="border-t border-slate-800 bg-slate-950/80 py-3 text-center text-[10px] text-slate-500 sticky bottom-0">
+        <p>Equipo de Consultoría SST - Prep Exposición 2026</p>
+    </footer>
+
+    <!-- App Logic Script -->
+    <script>
+        
+        // 1. DATA: FLASHCARDS DB (15 Comprehensive Cards)
+        const flashcardsData = [
+            {
+                category: "Justificación",
+                front: "¿Por qué se denomina 'Rediseño' en lugar de 'Diseño'?",
+                back: "Porque no se parte de cero; consiste en la corrección integral de un manual previo obsoleto que fue copiado de un sector industrial inaplicable.",
+                hint: "Ese manual viejo aumentó las incapacidades de los trabajadores un 25% en solo 6 meses."
+            },
+            {
+                category: "Fisiopatología",
+                front: "¿Qué efecto fisiológico tiene prohibir las pausas activas?",
+                back: "Produce contracción estática continuada en el músculo, deteniendo la circulación de sangre oxigenada (isquemia) y acumulando ácido láctico.",
+                hint: "Sin pausas activas el músculo carece de oxígeno, generando espasmos, dolores y fatiga severa."
+            },
+            {
+                category: "Biomecánica",
+                front: "¿Qué consecuencia física genera ubicar las pantallas por debajo de los ojos?",
+                back: "Fuerza una flexión continua de cuello mayor a 15 grados, duplicando o triplicando el esfuerzo y peso real sobre la columna cervical y trapecios.",
+                hint: "Esto se conoce como el Síndrome de 'cuello de texto' y causa dolor y contracturas graves."
+            },
+            {
+                category: "Marco Legal",
+                front: "¿Qué norma define las especificaciones del mobiliario de oficina en Colombia?",
+                back: "La histórica Resolución 2400 de 1979 (Estatuto de Seguridad Industrial). Exige que las sillas y puestos de trabajo eviten la fatiga física.",
+                hint: "Especifica características como soporte lumbar y dimensiones correctas del escritorio."
+            },
+            {
+                category: "Marco Legal",
+                front: "¿Qué norma colombiana hace obligatorio el control de peligros biomecánicos?",
+                back: "El Decreto 1072 de 2015. Exige un Sistema de Gestión donde se identifiquen y controlen estrictamente los peligros biomecánicos de la oficina.",
+                hint: "Se encuentra regulado en el capítulo 6 relativo a la implementación del SG-SST."
+            },
+            {
+                category: "Marco Legal",
+                front: "¿Bajo qué norma se exige la vigilancia epidemiológica de la salud?",
+                back: "La Resolución 0312 de 2019 (Estándares Mínimos). Exige a empresas de más de 50 trabajadores vigilar y auditar periódicamente al personal.",
+                hint: "En el caso de Tecnoservicios del Pacífico, esto aplica directamente para sus 85 colaboradores."
+            },
+            {
+                category: "Población Objeto",
+                front: "¿Por qué el alcance incluye al personal directivo si ellos casi no digitan?",
+                back: "Porque el riesgo biomecánico no discrimina cargo. Los directivos pasan extensas jornadas de trabajo sentados usando portátiles y exponiéndose a lumbalgias.",
+                hint: "Su exposición ante Pantallas de Visualización de Datos (PVD) y sedentarismo es igual de crítica."
+            },
+            {
+                category: "Ergonomía Física",
+                front: "¿Cuáles son los ángulos articulares ideales para trabajar sentado?",
+                back: "Se debe mantener una postura neutra donde los ángulos de codos, cadera y rodillas estén en un rango cercano a los 90° - 100°.",
+                hint: "Asegurando siempre que los pies descansen de forma plana en el suelo o en un apoyapiés."
+            },
+            {
+                category: "Ergonomía Física",
+                front: "¿Por qué es obligatorio un apoyapiés si los pies quedan flotando?",
+                back: "Para evitar la compresión de la fosa poplítea detrás de los muslos, lo que obstruye la circulación sanguínea y genera estasis venoso (várices).",
+                hint: "El apoyapiés devuelve el apoyo plano y asegura la angulación de 90° de las rodillas."
+            },
+            {
+                category: "Tecnología",
+                front: "¿Por qué está prohibido usar el portátil de forma directa por más de 1 hora?",
+                back: "Porque su diseño integrado impide mantener la pantalla a la altura de los ojos y el teclado a los codos a la vez. Exige periféricos externos.",
+                hint: "Para jornadas largas se requiere obligatoriamente un elevador de pantalla, un teclado y un mouse independientes."
+            },
+            {
+                category: "Operación Diaria",
+                front: "¿Qué solución postural es obligatoria para la atención telefónica?",
+                back: "El uso exclusivo de diademas manos libres (headsets), prohibiendo de forma estricta presionar el auricular con el cuello inclinado hacia el hombro.",
+                hint: "Evita tensiones asimétricas severas, cefaleas tensionales y espasmos en los trapecios."
+            },
+            {
+                category: "Biomecánica",
+                front: "¿Qué zona se lesiona al levantar cargas doblando la espalda?",
+                back: "Se ejerce una presión intradiscal de compresión extrema en la zona lumbar (especialmente en los discos intervertebrales L4-S1).",
+                hint: "El método seguro exige doblar las rodillas, mantener la espalda recta e impulsarse con las piernas."
+            },
+            {
+                category: "Fatiga Visual",
+                front: "¿En qué consiste la Regla 20-20-20 del descanso ocular?",
+                back: "Cada 20 minutos de uso de pantalla, el colaborador debe desviar la mirada y enfocar un punto a 6 metros (20 pies) durante 20 segundos.",
+                hint: "Este ejercicio relaja el músculo ciliar del ojo y disminuye drásticamente la fatiga y sequedad ocular."
+            },
+            {
+                category: "Metodología",
+                front: "¿Cómo funciona la Fase 2 (Mobiliario) en el plan de 6 meses?",
+                back: "Se realiza una adecuación del mobiliario de forma escalonada en 2 meses por viabilidad financiera y para priorizar los casos críticos del checklist.",
+                hint: "Se utiliza el checklist de SST aplicado en el Mes 1 para priorizar según sintomatología activa."
+            },
+            {
+                category: "Marco Legal",
+                front: "¿Qué sanción tiene la empresa al incumplir los estándares de SST?",
+                back: "Multas severas del Ministerio del Trabajo que pueden ascender hasta los 500 salarios mínimos legales mensuales vigentes.",
+                hint: "Sustentado en el Decreto 1072 de 2015 y los Estándares Mínimos de la Resolución 0312."
+            }
+        ];
+
+        // 2. DATA: SLIDES DB (Complete 12 Slides of the Unified Script)
+        const slidesData = [
+            {
+                id: 1,
+                category: "Introducción",
+                title: "Diapositiva 1: Portada y Presentación",
+                idea: "Vender el proyecto como una consultoría técnica, no como una tarea escolar.",
+                speech: "Saluden con seguridad y presenten al equipo consultor (Gina, Ingris, Lizeth y Nathaly). Planteen el proyecto como un rediseño integral enfocado en los 85 colaboradores de la organización. Expliquen que el objetivo va más allá de cumplir un papel: se busca solucionar una crisis silenciosa que afecta la salud y la productividad.",
+                trap: "¿Por qué lo llaman 'Rediseño' en lugar de simplemente diseño?",
+                shield: "Lo llamamos rediseño porque la empresa ya tenía un manual implementado previamente, pero al haber sido elaborado sin asesoría y copiado de un sector industrial, generó problemas más graves. No estamos creando de la nada, estamos corrigiendo de raíz un error operativo del pasado."
+            },
+            {
+                id: 2,
+                category: "Justificación",
+                title: "Diapositiva 2: La Crisis de Tecnoservicios",
+                idea: "Explicar el desastre financiero y de salud que causó el manual anterior.",
+                speech: "Para entender por qué estamos aquí, debemos analizar la crisis de Tecnoservicios. Es una empresa con 85 trabajadores expuestos todo el día a computadores. En su momento, para salir rápido del paso ante una visita de inspección, la gerencia anterior implementó un manual copiado de una fábrica. ¿El resultado? El remedio fue peor que la enfermedad: en solo seis meses, las incapacidades médicas aumentaron un 25% por dolores severos en cuello, espalda y muñecas, afectando gravemente la digitación, el servicio al cliente y provocando llamados de atención por parte de la ARL.",
+                trap: "¿Por qué un manual industrial aumentó las incapacidades en una oficina?",
+                shield: "Porque el manual de sector industrial está diseñado para operarios de pie o personas que cargan mucho peso continuo en plantas de producción. Ignoraba por completo las necesidades de un digitador o un asesor telefónico, tales como el soporte lumbar continuo, el ángulo visual del monitor o la fatiga por digitación repetitiva."
+            },
+            {
+                id: 3,
+                category: "Diagnóstico 1",
+                title: "Diapositiva 3: Auditoría del Manual Viejo (Errores 1 al 5)",
+                idea: "Demostrar que auditaron técnicamente el documento obsoleto.",
+                speech: "Al auditar la primera parte del manual antiguo, encontramos hallazgos biomecánicos alarmantes. En primer lugar, operaba sin base legal colombiana y sin definir a quién aplicaba. En segundo lugar, cometía la gran irresponsabilidad de prohibir las pausas activas argumentando falsamente una pérdida de productividad; esto saturaba los músculos con ácido láctico por contracción estática. Adicionalmente, obligaba al personal a estar sentado toda la jornada provocando problemas circulatorios, y enseñaba a levantar cajas del archivo doblando la espalda con las piernas rectas, lo cual genera una presión discal extrema en la columna lumbar.",
+                trap: "¿Qué pasa físicamente en el cuerpo si prohíbo las pausas activas?",
+                shield: "El músculo que permanece tenso y sin movimiento acumula ácido láctico y no se oxigena adecuadamente. Esto genera fatiga física acumulada, dolor y, a mediano plazo, espasmos musculares severos y desórdenes musculoesqueléticos crónicos."
+            },
+            {
+                id: 4,
+                category: "Diagnóstico 2",
+                title: "Diapositiva 4: Auditoría del Manual Viejo (Errores 6 al 10)",
+                idea: "Continuar el diagnóstico de errores técnicos enfocados en oficina.",
+                speech: "Continuando con el diagnóstico, el manual viejo permitía el uso de cualquier silla ordinaria sin soporte lumbar, lo que generaba hombros caídos y cervicalgias. Recomendaba colocar la pantalla por debajo de la línea del ojo, forzando una flexión de cuello de más de 15° que provoca el Síndrome de 'cuello de texto'. Finalmente, no definía responsabilidades ni mecanismos de control, y al ser un modelo industrial, omitió por completo riesgos críticos de oficina como el uso de teclados o la digitación, disparando los casos de Síndrome del Túnel Carpiano en la empresa.",
+                trap: "¿Por qué colocar la pantalla por debajo de los ojos es tan peligroso?",
+                shield: "Por cada centímetro que inclinamos la cabeza hacia adelante para mirar una pantalla baja, la tensión y el peso real que soporta la musculatura de la columna cervical y los trapecios se duplica. Esto tensiona crónicamente el cuello, provocando cefaleas tensionales y contracturas graves."
+            },
+            {
+                id: 5,
+                category: "Sustento",
+                title: "Diapositiva 5: Marco Legal y Regulatorio (Sustento Jurídico)",
+                idea: "Demostrar que la propuesta está blindada por las leyes de Colombia.",
+                speech: "Nuestra propuesta de rediseño está plenamente blindada bajo la legislación colombiana de SST. Nos sustentamos en cuatro pilares normativos: la Ley 1562 de 2012, que vigila la prevención de enfermedades laborales; el Decreto 1072 de 2015, que hace obligatorio el control de peligros biomecánicos; la clásica Resolución 2400 de 1979 (el Estatuto de Seguridad Industrial), que define las características técnicas que debe cumplir el mobiliario de oficina para evitar la fatiga; y la Resolución 0312 de 2019, que nos exige auditar y vigilar la salud de los 85 colaboradores a través de un sistema estructurado.",
+                trap: "¿Qué sanciones se expone Tecnoservicios si no implementa esto?",
+                shield: "El incumplimiento del Decreto 1072 y los Estándares Mínimos de la Resolución 0312 acarrea multas severas por parte del Ministerio del Trabajo que pueden ascender hasta los 500 salarios mínimos legales mensuales vigentes, además de demandas de responsabilidad civil patronal si un trabajador desarrolla una enfermedad laboral certificada."
+            },
+            {
+                id: 6,
+                category: "Objetivos",
+                title: "Diapositiva 6: Objetivos y Alcance del Nuevo Manual",
+                idea: "Definir la meta cuantitativa y la población objeto.",
+                speech: "El nuevo manual tiene metas sumamente claras y alcanzables. Nos proponemos bajar el ausentismo biomecánico de la empresa a menos del 5% en un año, adecuar técnicamente el 100% de los puestos de trabajo de oficina y sembrar una sólida cultura de autocuidado. En cuanto al alcance, este documento aplica de carácter estrictamente obligatorio para la totalidad de los 85 colaboradores de Tecnoservicios del Pacífico, desde los asesores telefónicos y contadores hasta el personal directivo que pase su jornada frente a pantallas.",
+                trap: "¿Por qué el alcance también incluye al personal directivo si ellos casi no digitan tanto como los asesores?",
+                shield: "Porque el riesgo biomecánico no discrimina cargo. Los directivos pasan extensas jornadas de trabajo sentado en reuniones virtuales y revisando informes en computadores portátiles, por lo que están igual de expuestos a desarrollar lumbalgias o fatiga visual."
+            },
+            {
+                id: 7,
+                category: "Ergonomía",
+                title: "Diapositiva 7: El Puesto de Trabajo Correcto",
+                idea: "Explicar cómo debe verse un puesto ergonómico perfecto.",
+                speech: "Como vemos en la ilustración de nuestra propuesta, el puesto de trabajo correcto requiere tres ajustes esenciales. Primero, una silla ergonómica certificada de 5 ruedas y con soporte lumbar, manteniendo rodillas, codos y cadera en ángulos rectos de 90 grados con los pies planos en el suelo o apoyapiés. Segundo, la pantalla debe situarse justo al nivel horizontal de los ojos y a la distancia de un brazo. Y tercero, definimos una zona de alcance fácil manteniendo el teclado a 10 centímetros del borde del escritorio para reposar las muñecas y el mouse a no más de 25 centímetros.",
+                trap: "¿Qué pasa si la silla es muy alta y al graduarla a la mesa los pies del trabajador quedan colgando?",
+                shield: "Ese es un riesgo de compresión circulatoria en los muslos. En ese escenario, es de carácter obligatorio dotar al trabajador de un apoyapiés o reposapiés técnico con inclinación ajustable para restablecer el apoyo plano y asegurar la angulación de 90 grados en las rodillas."
+            },
+            {
+                id: 8,
+                category: "Tareas",
+                title: "Diapositiva 8: Estándar para Tareas Administrativas Diarias",
+                idea: "Explicar las soluciones específicas para las labores cotidianas.",
+                speech: "Además de la postura frente al escritorio, el manual regula tres tareas operativas críticas. Primero, para la atención telefónica continuada, implementamos el uso obligatorio de diademas manos libres, prohibiendo inclinar lateralmente la cabeza. Segundo, para el archivo y manipulación ocasional de cajas o carpetas pesadas, el estándar exige doblar las rodillas, mantener la espalda recta e impulsarse con las piernas. Y tercero, prohibimos el uso continuo y directo de computadores portátiles por más de 1 hora; requerirán elevador, teclado y mouse independientes.",
+                trap: "¿Por qué está prohibido usar el portátil de forma directa en jornadas largas?",
+                shield: "Porque el diseño del portátil integra la pantalla y el teclado en una sola pieza. Si pones el teclado a la altura correcta de tus codos, la pantalla queda muy baja y doblas el cuello. Si elevas la pantalla a los ojos, el teclado queda muy alto y forzas los hombros. Por eso se requiere independizar los periféricos externos."
+            },
+            {
+                id: 9,
+                category: "Pausas",
+                title: "Diapositiva 9: Programa de Pausas Activas Dinámicas",
+                idea: "Detallar cómo van a combatir la fatiga muscular y visual cotidianamente.",
+                speech: "Nuestras pausas activas dejan de ser vistas como 'pérdida de tiempo' y se programan de forma obligatoria en dos sesiones diarias de 8 a 10 minutos: a las 10:00 AM y a las 3:00 PM, lideradas por dinamizadores de cada área. Realizaremos estiramientos tendinosos de cuello, hombros y muñecas para prevenir el túnel carpiano. Pero además, implementamos la Regla 20-20-20 de descanso visual: cada 20 minutos de uso de pantalla, el trabajador mirará un punto a 6 metros de distancia durante 20 segundos para relajar el enfoque del músculo ocular.",
+                trap: "¿Cómo van a controlar que los 85 trabajadores realmente hagan la pausa y no se queden trabajando?",
+                shield: "A través de dos estrategias: primero, la formación de 'Líderes de Pausas Activas' en cada oficina que inviten y organicen la sesión; y segundo, mediante auditorías sorpresa presenciales e indicadores de cumplimiento que el responsable de SST medirá mensualmente."
+            },
+            {
+                id: 10,
+                category: "Inspección",
+                title: "Diapositiva 10: Lista de Chequeo para Inspecciones de SST",
+                idea: "Presentar la herramienta técnica con la que van a medir y controlar el cumplimiento.",
+                speech: "Para garantizar que este manual no se quede guardado en un cajón, diseñamos esta Lista de Chequeo Ergonómica para inspecciones presenciales. Es un formato checklist que el líder de SST aplicará de forma periódica a cada uno de los 85 trabajadores. Evalúa parámetros críticos como la altura de la pantalla, el soporte lumbar de la silla, el apoyo de muñecas al digitar, el uso de diademas y la realización de pausas activas, permitiéndonos tomar acciones de mejora inmediatas ante cualquier anomalía postural.",
+                trap: "¿Qué hacen si un trabajador sale con 'No Cumple' repetidamente en la lista de chequeo?",
+                shield: "Se realiza una intervención inmediata en dos pasos: primero, el área de SST evalúa si es un problema de falla del mobiliario (para ordenar su reparación o cambio) y, segundo, se le brinda una re-capacitación personalizada e individual en higiene postural al colaborador para corregir sus hábitos."
+            },
+            {
+                id: 11,
+                category: "Plan",
+                title: "Diapositiva 11: Cronograma de Implementación en 4 Fases",
+                idea: "Mostrar que la solución es organizada, viable y estructurada a 6 meses.",
+                speech: "Nuestra propuesta de consultoría se ejecutará de manera organizada durante 6 meses en 4 fases secuenciales. La Fase 1 realiza el ajuste normativo y entrega formal a directivos. La Fase 2 adecúa físicamente los puestos mediante compras escalonadas de sillas, apoyapiés y diademas según prioridades de riesgo. La Fase 3 capacita a todo el personal en higiene postural. Y la Fase 4 realiza el seguimiento continuo a través de auditorías sorpresa con el checklist y el monitoreo médico de las incapacidades.",
+                trap: "¿Por qué la Fase 2 de mobiliario toma 2 meses? ¿No se debería comprar todo de inmediato?",
+                shield: "Técnicamente, se hace escalonado por dos razones: viabilidad financiera para la empresa (evitando un gasto masivo inmediato) y porque primero debemos aplicar la lista de chequeo en el Mes 1 para priorizar los casos más graves o con sintomatología activa."
+            },
+            {
+                id: 12,
+                category: "Cierre",
+                title: "Diapositiva 12: Responsabilidad Compartida y Cierre",
+                idea: "Recordar que la seguridad laboral es un compromiso de doble vía y citar la webgrafía.",
+                speech: "Para cerrar, recordamos que en Colombia la Seguridad y Salud en el Trabajo es una responsabilidad cruzada. La empresa tiene el deber legal de proveer el mobiliario certificado y garantizar el tiempo de las pausas, pero el trabajador tiene la obligación de participar en las capacitaciones, aplicar las recomendaciones y reportar de forma temprana cualquier dolor. Nuestra propuesta está soportada en referencias técnicas confirmadas del Ministerio del Trabajo, ARL SURA y el Estatuto de Seguridad Industrial colombiano. Muchas gracias, quedamos atentas a sus preguntas.",
+                trap: "¿Qué pasa si un trabajador se niega rotundamente a realizar las pausas activas o a sentarse bien?",
+                shield: "Bajo el Decreto 1072 de 2015, el autocuidado y el cumplimiento de las normas de SST de la empresa son obligaciones legales del trabajador. Si tras ser capacitado y tener el mobiliario correcto el trabajador persiste en no cumplir, la empresa tiene el soporte documental de la lista de chequeo para iniciar procesos disciplinarios por incumplimiento del reglamento de SST."
+            }
+        ];
+
+        // 3. DATA: EXAM SIMULATOR DB (10 Questions matching slides and audits)
+        const quizData = [
+            {
+                question: "Si la profesora les pregunta: '¿Por qué decidieron llamarlo Rediseño en lugar de simplemente Diseño?', ¿cuál es la razón técnica principal?",
+                options: [
+                    "Porque es un término comercial que se ve mejor en el presupuesto.",
+                    "Porque ya existía un manual previo que fue copiado de un sector industrial inaplicable, y nuestra labor corrige y mejora esa base.",
+                    "Porque la norma Resolución 0312 de 2019 prohíbe usar la palabra 'Diseño' en consultorías.",
+                    "Porque es obligatorio cambiarle el nombre cada seis meses en Colombia."
+                ],
+                correctIndex: 1,
+                feedback: "¡Excelente! No partimos de cero. Había un manual previo, pero al estar diseñado para fábricas y operarios de pie, enfermó a la gente. Nosotros corregimos de raíz ese error operativo."
+            },
+            {
+                question: "Fisiológicamente, ¿qué ocurre en el cuerpo del trabajador si se prohíben las pausas activas en Tecnoservicios?",
+                options: [
+                    "El músculo pierde masa y se atrofia de forma instantánea.",
+                    "Se acumula ácido láctico y ocurre una isquemia por falta de oxigenación debido a la contracción estática.",
+                    "El trabajador aumenta su nivel de concentración al no tener distracciones.",
+                    "Ocurre una dilatación de las arterias que sobre-oxigena el cerebro."
+                ],
+                correctIndex: 1,
+                feedback: "¡Exacto! Sin movimiento, el músculo tenso entra en contracción estática. Al no circular la sangre bien (isquemia), el ácido láctico se acumula, causando espasmos y dolores."
+            },
+            {
+                question: "¿Cuál es la consecuencia biomecánica de inclinar la cabeza hacia adelante para mirar una pantalla ubicada por debajo de la línea de los ojos?",
+                options: [
+                    "Se genera una presión discal de 500 salarios mínimos en la zona lumbar.",
+                    "La tensión y el peso real que soporta la columna cervical y trapecios se duplica o triplica debido al brazo de palanca física.",
+                    "La córnea se hidrata mejor al estar mirando hacia abajo de forma permanente.",
+                    "El nervio mediano se desplaza hacia el hombro evitando el túnel carpiano."
+                ],
+                correctIndex: 1,
+                feedback: "¡Perfecto! El peso real de la cabeza (aprox. 5kg) se multiplica físicamente a medida que inclinamos el cuello por debajo de la línea de visión horizontal. Esto causa cervicalgias agudas."
+            },
+            {
+                question: "¿Qué norma colombiana define de forma específica las especificaciones del mobiliario de oficina para evitar la fatiga física?",
+                options: [
+                    "Resolución 0312 de 2019.",
+                    "Resolución 2400 de 1979 (Estatuto de Seguridad Industrial).",
+                    "Ley 1562 de 2012.",
+                    "Decreto 1072 de 2015."
+                ],
+                correctIndex: 1,
+                feedback: "¡Correcto! La histórica Resolución 2400 de 1979 regula explícitamente que las sillas de oficina deben contar con soporte lumbar y dimensiones que mitiguen el desgaste físico."
+            },
+            {
+                question: "Si un trabajador tiene una silla ergonómica pero sus pies quedan colgando al graduar la altura de la mesa, ¿cuál es la solución obligatoria?",
+                options: [
+                    "Cambiar todo el escritorio de oficina por uno más bajo.",
+                    "Obligarlo a mantener los pies estirados hacia el frente durante toda la jornada.",
+                    "Dotar al trabajador de un apoyapiés técnico con inclinación ajustable para asegurar la angulación de 90°.",
+                    "Sugerirle que use zapatos con tacón alto para alcanzar el piso."
+                ],
+                correctIndex: 2,
+                feedback: "¡Bien pensado! Si los pies flotan, el borde del asiento comprime los vasos sanguíneos detrás de los muslos (fosa poplítea). El apoyapiés reactiva el retorno venoso."
+            },
+            {
+                question: "¿Por qué en el alcance de este manual de ergonomía se incluye al personal directivo si ellos no tienen cargas de digitación elevadas?",
+                options: [
+                    "Para justificar un costo de consultoría más elevado ante la gerencia.",
+                    "Porque el riesgo biomecánico no discrimina cargo; los directivos pasan extensas jornadas de trabajo sedentario frente a pantallas y portátiles.",
+                    "Porque la Resolución 2400 exige que los jefes firmen siempre la primera página.",
+                    "Porque los jefes deben dar ejemplo haciendo ejercicios más complejos que el resto de empleados."
+                ],
+                correctIndex: 1,
+                feedback: "¡Brillante! El riesgo ergonómico no distingue rangos. Los directivos pasan horas sentados en reuniones o redactando reportes en laptops, sufriendo las mismas lumbalgias."
+            },
+            {
+                question: "¿Por qué está estrictamente restringido usar un computador portátil de forma directa por más de 1 hora continua?",
+                options: [
+                    "Porque la batería del dispositivo puede recalentarse e inflamar las manos.",
+                    "Porque la pantalla y el teclado están integrados, forzando a elegir entre doblar el cuello o forzar los hombros si no se usan periféricos externos.",
+                    "Porque la ARL prohíbe el uso de tecnología móvil en horarios laborales de oficina.",
+                    "Porque la luz azul del portátil es el doble de dañina que la de un monitor de escritorio estándar."
+                ],
+                correctIndex: 1,
+                feedback: "¡Muy bien! Separar los periféricos (usar elevador para ver la pantalla de frente y conectar un teclado/mouse externo a la altura de los codos) es fundamental en jornadas extensas."
+            },
+            {
+                question: "¿Qué estrategia propone el manual para asegurar que los 85 trabajadores de Tecnoservicios realicen efectivamente sus pausas activas?",
+                options: [
+                    "Desconectar la energía de los computadores a las 10:00 AM y 3:00 PM.",
+                    "Formar Líderes de Pausas Activas por oficina y aplicar auditorías sorpresa presenciales lideradas por SST.",
+                    "Establecer multas económicas directas a la nómina de quienes no se levanten.",
+                    "Hacer que un robot virtual bloquee los escritorios de trabajo."
+                ],
+                correctIndex: 1,
+                feedback: "¡Excelente! La auto-gestión con líderes entrenados y el monitoreo sorpresa del responsable de SST garantizan que las pausas activas no se queden en 'letra muerta'."
+            },
+            {
+                question: "¿Por qué la Fase 2 de adecuación física y compra de mobiliario ergonómico se realiza de forma escalonada en 2 meses?",
+                options: [
+                    "Por un retraso logístico de los proveedores nacionales de sillas certificadas.",
+                    "Por viabilidad financiera empresarial y porque se priorizan los casos críticos y sintomáticos detectados con el checklist del Mes 1.",
+                    "Porque la Ley colombiana prohíbe cambiar el mobiliario de una oficina en un plazo inferior a 90 días.",
+                    "Para dar tiempo a que los trabajadores decidan el color de las diademas."
+                ],
+                correctIndex: 1,
+                feedback: "¡Correcto! Esta estrategia cuida la caja financiera de Tecnoservicios y atiende prioritariamente a quienes sufren dolores activos y requieren adecuaciones inmediatas."
+            },
+            {
+                question: "Si un colaborador se niega rotundamente a realizar las pausas activas o a adoptar posturas correctas tras ser capacitado, ¿qué acción legal respalda a la empresa?",
+                options: [
+                    "No hay soporte legal; el autocuidado es una sugerencia opcional e individual en Colombia.",
+                    "El Decreto 1072 de 2015 dictamina que el autocuidado y las directrices de SST son obligaciones laborales contractuales, permitiendo iniciar procesos disciplinarios.",
+                    "La empresa puede descontar un porcentaje de las prestaciones sociales por desacato.",
+                    "El manual de SST autoriza a suspender temporalmente el contrato del trabajador sin goce de sueldo el mismo día."
+                ],
+                correctIndex: 1,
+                feedback: "¡Exacto! El Decreto 1072 de 2015 respalda a la organización. Si se entrega el mobiliario y la capacitación, cuidarse pasa a ser un deber contractual y de ley del trabajador."
+            }
+        ];
+
+        let currentCardIndex = 0;
+        let isCardFlipped = false;
+
+        let currentSlideIndex = 0;
+
+        let currentQuizIndex = 0;
+        let userSelectedOption = null;
+        let isQuizAnswerChecked = false;
+        let quizAnswersCorrect = 0;
+        let quizAnswersTotal = 0;
+
+        // Init Card & Slides on Load
+        updateFlashcardUI();
+        updateSlideUI();
+
+        // View Tabs switching controller
+        function switchTab(tabId) {
+            // Panels references
+            const pFlash = document.getElementById("panel-flashcards");
+            const pSlides = document.getElementById("panel-slides");
+            const pQuiz = document.getElementById("panel-quiz");
+            const pGlosario = document.getElementById("panel-glosario");
+
+            // Buttons references
+            const bFlash = document.getElementById("tab-flashcards");
+            const bSlides = document.getElementById("tab-slides");
+            const bQuiz = document.getElementById("tab-quiz");
+            const bGlosario = document.getElementById("tab-glosario");
+
+            // Reset active styles
+            [bFlash, bSlides, bQuiz, bGlosario].forEach(b => {
+                b.className = "flex-1 py-2 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white";
+            });
+
+            // Set active states
+            if (tabId === 'flashcards') {
+                pFlash.classList.remove("hidden");
+                pSlides.classList.add("hidden");
+                pQuiz.classList.add("hidden");
+                pGlosario.classList.add("hidden");
+                bFlash.className = "flex-1 py-2 rounded-lg text-xs font-bold transition-all bg-emerald-500 text-slate-950";
+            } else if (tabId === 'slides') {
+                pFlash.classList.add("hidden");
+                pSlides.classList.remove("hidden");
+                pQuiz.classList.add("hidden");
+                pGlosario.classList.add("hidden");
+                bSlides.className = "flex-1 py-2 rounded-lg text-xs font-bold transition-all bg-emerald-500 text-slate-950";
+            } else if (tabId === 'quiz') {
+                pFlash.classList.add("hidden");
+                pSlides.classList.add("hidden");
+                pQuiz.classList.remove("hidden");
+                pGlosario.classList.add("hidden");
+                bQuiz.className = "flex-1 py-2 rounded-lg text-xs font-bold transition-all bg-emerald-500 text-slate-950";
+                
+                // Initialize Quiz if first load
+                initQuizUI();
+            } else {
+                pFlash.classList.add("hidden");
+                pSlides.classList.add("hidden");
+                pQuiz.classList.add("hidden");
+                pGlosario.classList.remove("hidden");
+                bGlosario.className = "flex-1 py-2 rounded-lg text-xs font-bold transition-all bg-emerald-500 text-slate-950";
+            }
+        }
+
+        // --- FLASHCARDS LOGIC CONTROLLER ---
+        function flipCard() {
+            const cardEl = document.getElementById("flashcard");
+            isCardFlipped = !isCardFlipped;
+            if (isCardFlipped) {
+                cardEl.classList.add("rotate-y-180");
+            } else {
+                cardEl.classList.remove("rotate-y-180");
+            }
+        }
+
+        function updateFlashcardUI() {
+            const data = flashcardsData[currentCardIndex];
+            document.getElementById("card-tag").textContent = data.category;
+            document.getElementById("card-front-text").textContent = data.front;
+            document.getElementById("card-back-text").textContent = data.back;
+            document.getElementById("card-hint-text").textContent = data.hint;
+            document.getElementById("card-counter").textContent = `${currentCardIndex + 1} / ${flashcardsData.length}`;
+
+            // Reset card rotation
+            const cardEl = document.getElementById("flashcard");
+            isCardFlipped = false;
+            cardEl.classList.remove("rotate-y-180");
+        }
+
+        function nextCard() {
+            currentCardIndex = (currentCardIndex + 1) % flashcardsData.length;
+            updateFlashcardUI();
+        }
+
+        function prevCard() {
+            currentCardIndex = (currentCardIndex - 1 + flashcardsData.length) % flashcardsData.length;
+            updateFlashcardUI();
+        }
+
+        // --- SLIDES LOGIC CONTROLLER ---
+        function updateSlideUI() {
+            const slide = slidesData[currentSlideIndex];
+            document.getElementById("slide-number-lbl").textContent = `Diapositiva ${slide.id} de ${slidesData.length}`;
+            document.getElementById("slide-category-lbl").textContent = slide.category;
+            document.getElementById("slide-title-lbl").textContent = slide.title;
+            document.getElementById("slide-idea-lbl").textContent = slide.idea;
+            document.getElementById("slide-speech-lbl").textContent = slide.speech;
+            document.getElementById("slide-trap-lbl").textContent = slide.trap;
+            document.getElementById("slide-shield-lbl").textContent = slide.shield;
+        }
+
+        function nextSlide() {
+            currentSlideIndex = (currentSlideIndex + 1) % slidesData.length;
+            updateSlideUI();
+        }
+
+        function prevSlide() {
+            currentSlideIndex = (currentSlideIndex - 1 + slidesData.length) % slidesData.length;
+            updateSlideUI();
+        }
+
+
+        // --- QUIZ GAME SIMULATOR LOGIC ---
+        function initQuizUI() {
+            const q = quizData[currentQuizIndex];
+            
+            document.getElementById("quiz-question-counter").textContent = `Pregunta ${currentQuizIndex + 1} de ${quizData.length}`;
+            document.getElementById("quiz-question-text").textContent = q.question;
+            
+            // Generate list of options dynamically
+            const container = document.getElementById("quiz-options-container");
+            container.innerHTML = "";
+            
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement("button");
+                btn.className = "w-full p-3.5 rounded-2xl bg-slate-950 hover:bg-slate-900 border border-slate-800 text-left text-xs transition duration-150 flex items-start gap-3 text-slate-300 font-medium";
+                btn.id = `opt-btn-${idx}`;
+                btn.onclick = () => selectQuizOption(idx);
+                
+                // Index letter index code generator (A, B, C, D)
+                const letter = String.fromCharCode(65 + idx);
+                btn.innerHTML = `<span class="bg-slate-800 border border-slate-700 px-1.5 py-0.5 rounded font-bold text-[10px] text-slate-400">${letter}</span><span class="flex-1">${opt}</span>`;
+                
+                container.appendChild(btn);
+            });
+
+            // Hide feedback panel
+            document.getElementById("quiz-feedback-panel").classList.add("hidden");
+            
+            // Set action button state
+            const actionBtn = document.getElementById("quiz-action-btn");
+            actionBtn.textContent = "Verificar Respuesta";
+            actionBtn.className = "w-full py-3.5 bg-slate-800 text-slate-400 font-extrabold rounded-2xl cursor-not-allowed transition text-xs";
+            
+            userSelectedOption = null;
+            isQuizAnswerChecked = false;
+        }
+
+        function selectQuizOption(index) {
+            if (isQuizAnswerChecked) return;
+
+            // Update UI selector markers
+            const currentQ = quizData[currentQuizIndex];
+            currentQ.options.forEach((opt, idx) => {
+                const el = document.getElementById(`opt-btn-${idx}`);
+                if (idx === index) {
+                    el.className = "w-full p-3.5 rounded-2xl bg-emerald-950/40 border border-emerald-500/50 text-left text-xs transition duration-150 flex items-start gap-3 text-slate-100 font-bold shadow-lg shadow-emerald-950/10";
+                } else {
+                    el.className = "w-full p-3.5 rounded-2xl bg-slate-950 hover:bg-slate-900 border border-slate-800 text-left text-xs transition duration-150 flex items-start gap-3 text-slate-400 font-medium";
+                }
+            });
+
+            userSelectedOption = index;
+            
+            // Enable action button
+            const actionBtn = document.getElementById("quiz-action-btn");
+            actionBtn.textContent = "Verificar Respuesta";
+            actionBtn.className = "w-full py-3.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold rounded-2xl transition text-xs shadow-lg shadow-emerald-500/10 cursor-pointer";
+        }
+
+        function submitQuizAnswer() {
+            if (userSelectedOption === null) return;
+
+            const q = quizData[currentQuizIndex];
+            const feedbackPanel = document.getElementById("quiz-feedback-panel");
+            const feedbackTitle = document.getElementById("quiz-feedback-title");
+            const feedbackBody = document.getElementById("quiz-feedback-body");
+            const actionBtn = document.getElementById("quiz-action-btn");
+
+            // If we are already displaying verification results, move to the next question
+            if (isQuizAnswerChecked) {
+                currentQuizIndex++;
+                if (currentQuizIndex >= quizData.length) {
+                    // Reset Quiz to initial index state
+                    currentQuizIndex = 0;
+                    quizAnswersCorrect = 0;
+                    quizAnswersTotal = 0;
+                    document.getElementById("quiz-score").textContent = `Puntaje: 0 / 0`;
+                }
+                initQuizUI();
+                return;
+            }
+
+            // Execute Verification logic
+            isQuizAnswerChecked = true;
+            quizAnswersTotal++;
+
+            const isCorrect = userSelectedOption === q.correctIndex;
+            if (isCorrect) {
+                quizAnswersCorrect++;
+                feedbackPanel.className = "mt-4 p-3.5 rounded-xl border border-emerald-500/30 bg-emerald-950/20 text-xs";
+                feedbackTitle.textContent = "🟢 ¡CORRECTO! - ESCUDO DE SST ACTIVADO";
+                feedbackTitle.className = "text-[10px] font-extrabold uppercase text-emerald-400 block tracking-wider";
+            } else {
+                feedbackPanel.className = "mt-4 p-3.5 rounded-xl border border-red-500/30 bg-red-950/20 text-xs";
+                feedbackTitle.textContent = "🔴 RESPUESTA INCORRECTA - ALERTA DE TRÁMITE";
+                feedbackTitle.className = "text-[10px] font-extrabold uppercase text-red-400 block tracking-wider";
+            }
+
+            // Highlight Correct vs Incorrect options visually on buttons
+            q.options.forEach((opt, idx) => {
+                const el = document.getElementById(`opt-btn-${idx}`);
+                if (idx === q.correctIndex) {
+                    el.className = "w-full p-3.5 rounded-2xl bg-emerald-500 text-slate-950 border border-emerald-400 text-left text-xs flex items-start gap-3 font-bold shadow-lg shadow-emerald-500/10";
+                } else if (idx === userSelectedOption) {
+                    el.className = "w-full p-3.5 rounded-2xl bg-red-600 text-white border border-red-500 text-left text-xs flex items-start gap-3 font-semibold shadow-lg shadow-red-500/10";
+                } else {
+                    el.className = "w-full p-3.5 rounded-2xl bg-slate-950 opacity-40 border border-slate-800 text-left text-xs flex items-start gap-3 text-slate-600 cursor-not-allowed";
+                }
+            });
+
+            // Update score display
+            document.getElementById("quiz-score").textContent = `Puntaje: ${quizAnswersCorrect} / ${quizAnswersTotal}`;
+
+            // Populate and show feedback
+            feedbackBody.textContent = q.feedback;
+            feedbackPanel.classList.remove("hidden");
+
+            // Change button action label
+            if (currentQuizIndex === quizData.length - 1) {
+                actionBtn.textContent = "Finalizar y Reiniciar";
+            } else {
+                actionBtn.textContent = "Siguiente Pregunta";
+            }
+        }
+
+
+        // --- GLOSSARY SEARCH FILTER ENGINE ---
+        function filterGlossary() {
+            const query = document.getElementById("glossary-search").value.toLowerCase();
+            const items = document.getElementsByClassName("glossary-item");
+
+            Array.from(items).forEach(item => {
+                const text = item.textContent.toLowerCase();
+                if (text.includes(query)) {
+                    item.classList.remove("hidden");
+                } else {
+                    item.classList.add("hidden");
+                }
+            });
+        }
+    </script>
+</body>
+</html>
